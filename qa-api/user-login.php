@@ -14,7 +14,7 @@
 	$success = 0;
 	$message = '';
 	$data = array();
-	if (strlen($inemailhandle) || strlen($inpassword)) {
+	if (strlen($inemailhandle) && strlen($inpassword)) {
 		require_once QA_INCLUDE_DIR . 'app/limits.php';
 
 		if (qa_user_limits_remaining(QA_LIMIT_LOGINS)) {
