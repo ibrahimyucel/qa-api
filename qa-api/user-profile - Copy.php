@@ -5,60 +5,86 @@
 
 	require_once '../qa-include/qa-app-format.php';
 	require_once '../qa-include/qa-app-users.php';
+
 	
-	$handle = qa_get('handle');
-	$userid = qa_handle_to_userid($handle);
-	$loginuserid = qa_get_logged_in_userid();
-	$identifier = QA_FINAL_EXTERNAL_USERS ? $userid : $handle;
+	$inemail = qa_post_text('email');
+	$inhandle = qa_post_text('handle');
+	$inpassword = qa_post_text('password');
+	$inremember = qa_post_text('remember');
+	
+	if (qa_opt('suspend_register_users')) {
+		$success = 0;
+		$message = qa_lang_html('users/register_suspended');
+	}
 
-	list($useraccount, $userprofile, $userfields, $usermessages, $userpoints, $userlevels, $navcategories, $userrank) =
-		qa_db_select_with_pending(
-			QA_FINAL_EXTERNAL_USERS ? null : qa_db_user_account_selectspec($handle, false),
-			QA_FINAL_EXTERNAL_USERS ? null : qa_db_user_profile_selectspec($handle, false),
-			QA_FINAL_EXTERNAL_USERS ? null : qa_db_userfields_selectspec(),
-			QA_FINAL_EXTERNAL_USERS ? null : qa_db_recent_messages_selectspec(null, null, $handle, false, qa_opt_if_loaded('page_size_wall')),
-			qa_db_user_points_selectspec($identifier),
-			qa_db_user_levels_selectspec($identifier, QA_FINAL_EXTERNAL_USERS, true),
-			qa_db_category_nav_selectspec(null, true),
-			qa_db_user_rank_selectspec($identifier)
-		);
+	if (qa_user_permit_error()) {
+		$success = 0;
+		$message = qa_lang_html('users/no_permission');
+	}
 
-	if (!QA_FINAL_EXTERNAL_USERS && $handle !== qa_get_logged_in_handle()) {
-		foreach ($userfields as $index => $userfield) {
-			if (isset($userfield['permit']) && qa_permit_value_error($userfield['permit'], $loginuserid, qa_get_logged_in_level(), qa_get_logged_in_flags()))
-				unset($userfields[$index]); // don't pay attention to user fields we're not allowed to view
+	$success = 0;
+	$message = '';
+	$data = array();
+	
+	if (strlen($inemail) && strlen($inhandle) && strlen($inpassword)) {
+		require_once QA_INCLUDE_DIR . 'app/limits.php';
+
+		if (qa_user_limits_remaining(QA_LIMIT_REGISTRATIONS)) {
+			require_once QA_INCLUDE_DIR . 'app/users-edit.php';
+
+			// core validation
+			$errors = array_merge(
+				qa_handle_email_filter($inhandle, $inemail),
+				qa_password_validate($inpassword)
+			);
+
+			// T&Cs validation
+			//if ($show_terms && !$interms) $errors['terms'] = qa_lang_html('users/terms_not_accepted');
+
+			// filter module validation
+			if (count($inprofile)) {
+				$filtermodules = qa_load_modules_with('filter', 'filter_profile');
+				foreach ($filtermodules as $filtermodule)
+					$filtermodule->filter_profile($inprofile, $errors, null, null);
+			}
+
+			//if (qa_opt('captcha_on_register')) qa_captcha_validate_post($errors);
+
+			if (empty($errors)) {
+				// register and redirect
+				qa_limits_increment(null, QA_LIMIT_REGISTRATIONS);
+
+				$userid = qa_create_new_user($inemail, $inpassword, $inhandle);
+				$userinfo = qa_db_select_with_pending(qa_db_user_account_selectspec($userid, true));
+				
+				qa_set_logged_in_user($userid, $inhandle);
+				
+				$success = 1;
+				$message = 'Logged in successfully';
+				$data['userid'] = $inuserid;
+				$data['email'] = $userinfo['email'];
+				$data['level'] = $userinfo['level'];
+				$data['handle'] = $userinfo['handle'];
+				$data['created'] = $userinfo['created'];
+				$data['loggedin'] = $userinfo['loggedin'];
+				$data['avatarblobid'] = $userinfo['avatarblobid'];
+				$data['points'] = $userinfo['points'];
+				$data['wallposts'] = $userinfo['wallposts'];
+				
+				$topath = qa_get('to');
+
+				//if (isset($topath)) qa_redirect_raw(qa_path_to_root() . $topath); // path already provided as URL fragment
+				//else qa_redirect('');
+			}
+
+		} else {
+			$success = 0;
+			$message = a_lang('users/register_limit');
 		}
+	} else {
+		$success = 0;
+		$message = 'You need to enter a username, email and a  password to proceed';
 	}
 	
-	$data = array();
-
-	
-	array_push($data, array(
-		'userid' 				=> $useraccount['userid'],
-		'passsalt' 				=> $useraccount['passsalt'],
-		'passcheck' 			=> $useraccount['passcheck'],
-		'passhash' 				=> $useraccount['passhash'],
-		'email' 				=> $useraccount['email'],
-		'level' 				=> $useraccount['level'],
-		'emailcode' 			=> $useraccount['emailcode'],
-		'handle' 				=> $useraccount['handle'],
-		'created' 				=> $useraccount['created'],
-		'sessioncode' 			=> $useraccount['sessioncode'],
-		'sessionsource' 		=> $useraccount['sessionsource'],
-		'flags' 				=> $useraccount['flags'],
-		'loggedin' 				=> $useraccount['loggedin'],
-		'loginip' 				=> $useraccount['loginip'],
-		'written' 				=> $useraccount['written'],
-		'writeip' 				=> $useraccount['writeip'],
-		'avatarblobid' 			=> $useraccount['avatarblobid'],
-		'avatarwidth' 			=> $useraccount['avatarwidth'],
-		'avatarheight' 			=> $useraccount['avatarheight'],
-		'points' 				=> $useraccount['points'],
-		'wallposts' 			=> $useraccount['wallposts'],
-		)
-	);	
-	
-	
-	$output = json_encode(array('data' => $data));
-	
+	$output = json_encode(array('success' => $success, 'message' => $message, 'data' => $data));	
 	echo $output;

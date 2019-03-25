@@ -67,7 +67,7 @@
 				qa_set_logged_in_user($userid, $inhandle);
 				
 				$success = 1;
-				$message = 'Logged in successfully';
+				$message = 'Registered and Logged in successfully';
 				$data['userid'] = $userid;
 				$data['email'] = $userinfo['email'];
 				$data['level'] = $userinfo['level'];
