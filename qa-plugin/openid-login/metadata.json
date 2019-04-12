@@ -1,0 +1,11 @@
+{
+	"name": "OpenID Login",
+	"description": "Allows users to log in via Facebook, Twitter, Google and other OpenID providers",
+	"version": "0.1.3",
+	"date": "2019-01-01",
+	"author": "Jack Siro",
+	"author_uri": "http://github.com/jacksiro",
+	"license": "GPLv2",
+	"min_q2a": "1.6",
+	"load_order": "after_db_init"
+}
