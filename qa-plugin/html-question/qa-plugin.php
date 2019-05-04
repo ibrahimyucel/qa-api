@@ -2,7 +2,7 @@
 /*
 	Plugin Name: HTML Question
 	Plugin Description: Enables questions to be posted quickly by uploading HTML files
-	Plugin Version: 1.0
+	Plugin Version: 1.1.2
 	Plugin Date: 2019-10-04
 	Plugin Author: Jack Siro
 	Plugin Author URI: https://www.github.com/jacksiro
@@ -24,5 +24,4 @@ if ( !defined('QA_VERSION') )
 	
 	qa_register_plugin_phrases('hq-lang-*.php', 'hq_lang');
 	qa_register_plugin_layer('hq-adapter.php', 'HTML Question Layer');
-	//qa_register_plugin_module('page', 'html-question.php', 'html_question', 'HTML Question');
-	//qa_register_plugin_module('page', 'pm-feedback.php', 'pm_feedback', 'Feedback Adapter');
+	qa_register_plugin_module('page', 'hq-plugin.php', 'html_question', 'HTML Question');

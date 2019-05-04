@@ -1,11 +1,4 @@
 <?php
-/*
-	Blog Post by Jackson Siro
-	https://www.github.com/Jacksiro/Q2A-Blog-Post-Plugin
-
-	Description: Blog Post Plugin Admin pages manager
-
-*/
 
 if (!defined('QA_VERSION')) { // don't allow this page to be requested directly from browser
 	header('Location: ../../../');
@@ -42,7 +35,7 @@ if (!defined('QA_VERSION')) { // don't allow this page to be requested directly 
 			
 			if (strtolower(qa_request_part(1)) == 'eqf') {
 				$this->template = $adminsection;
-				$this->bp_navigation($adminsection);
+				$this->admin_navigation($adminsection);
 				$this->content['suggest_next']="";
 				$this->content['error'] = $securityexpired ? qa_lang_html('admin/form_security_expired') : qa_admin_page_error();
 				$this->content['title'] = qa_lang_html('admin/admin_title') . ' - ' . qa_lang(qa_eqf::PLUGIN.'/'.qa_eqf::PLUGIN.'_nav');
@@ -51,22 +44,22 @@ if (!defined('QA_VERSION')) { // don't allow this page to be requested directly 
 			qa_html_theme_base::doctype();
 		}
 		
-		function nav_list($bp_navigation, $class, $level=null)
+		function nav_list($admin_navigation, $class, $level=null)
 		{
 			if($this->template=='admin') {
 				if ($class == 'nav-sub') {
-					$bp_navigation['eqf'] = array(
+					$admin_navigation['eqf'] = array(
 						'label' => qa_lang(qa_eqf::PLUGIN.'/'.qa_eqf::PLUGIN.'_nav'),
 						'url' => qa_path_html('admin/eqf'),
 					);
 				}
-				if ( $this->request == 'admin/eqf' ) $bp_navigation = array_merge(qa_admin_sub_navigation(), $bp_navigation);
+				if ( $this->request == 'admin/eqf' ) $admin_navigation = array_merge(qa_admin_sub_navigation(), $admin_navigation);
 			}
-			if(count($bp_navigation) > 1 ) 
-				qa_html_theme_base::nav_list($bp_navigation, $class, $level=null);	
+			if(count($admin_navigation) > 1 ) 
+				qa_html_theme_base::nav_list($admin_navigation, $class, $level=null);	
 		}
 		
-		function bp_navigation($request)
+		function admin_navigation($request)
 		{
 			$this->content['navigation']['sub'] = qa_admin_sub_navigation();
 			$this->content['navigation']['sub']['eqf'] = array(

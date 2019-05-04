@@ -1,0 +1,12 @@
+{
+	"name": "Private Message Adapter",
+	"description": "Adds an editor of your choice on the private message and feedback pages, including support for HTML messages",
+	"version": "1.2.0",
+	"date": "2017-07-20",
+	"author": "Jackson Siro",
+	"author_uri": "https://github.com/Jacksiro/",
+	"license": "GPLv3",
+	"update_uri": "https://github.com/Jacksiro/Q2A-PM-Adapter-Plugin/master/metadata.json",
+	"min_q2a": "1.6",
+	"min_php": "5.4"
+}

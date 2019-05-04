@@ -1,6 +1,6 @@
 {
 	"name": "OpenID Login",
-	"description": "Allows users to log in via Facebook, Twitter, Google and other OpenID providers",
+	"description": "Allows users to log in via Facebook, Google and Linkedin",
 	"version": "0.1.3",
 	"date": "2019-01-01",
 	"author": "Jack Siro",

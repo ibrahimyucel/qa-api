@@ -1,34 +1,9 @@
 <?php
 
 /*
-	Question2Answer (c) Gideon Greenspan
-	Open Login Plugin (c) Alex Lixandru
-
-	http://www.question2answer.org/
-
-	
-	File: qa-plugin/open-login/qa-plugin.php
-	Version: 3.0.0
-	Description: Initiates Open Login plugin
-
-
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 2
-	of the License, or (at your option) any later version.
-	
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	More about this license: http://www.question2answer.org/license.php
-*/
-
-/*
 	Plugin Name: OpenID Login
 	Plugin URI:http://github.com/jacksiro/q2a-openid-login
-	Plugin Description: Allows users to log in via Facebook, Twitter, Google and other OpenID providers
+	Plugin Description: Allows users to log in via Facebook, Google and Linkedin
 	Plugin Version: 0.1.3
 	Plugin Date: 2019-01-01
 	Plugin Author: Jack Siro
@@ -39,9 +14,6 @@
 	Plugin Update Check URI: 
 */
 
-/*
-	Based on Facebook Login plugin
-*/
 
 if (!defined('QA_VERSION')) { // don't allow this page to be requested directly from browser
 	header('Location: ../../');
@@ -49,28 +21,10 @@ if (!defined('QA_VERSION')) { // don't allow this page to be requested directly 
 }
 
 
-if (!QA_FINAL_EXTERNAL_USERS) { // login modules don't work with external user integration
-
-	qa_register_plugin_phrases('qa-open-lang-*.php', 'plugin_open');
-	qa_register_plugin_overrides('qa-open-overrides.php');
-	qa_register_plugin_layer('qa-open-layer.php', 'OAuth/OpenID Layer');
-	qa_register_plugin_module('page', 'qa-open-page-logins.php', 'qa_open_logins_page', 'Open Login Configuration');
-	qa_register_plugin_module('widget', 'qa-open-widget.php', 'qa_open_logins_widget', 'Open Login Providers');
-	
-	// sice we're not allowed to access the database at this step, take the information from a local file
-	// note: the file providers.php will be automatically generated when the configuration of the plugin
-	// is updated on the Administration page
-	$providers = @include_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'providers.php';
-	if ($providers) {
-		// loop through all active providers and register them
-		$providerList = explode(',', $providers);
-		foreach($providerList as $provider) {
-			qa_register_plugin_module('login', 'qa-open-login.php', 'qa_open_login', $provider);
-		}
-	}
-	
+// login modules don't work with external user integration
+if (!QA_FINAL_EXTERNAL_USERS) {	
+	qa_register_plugin_phrases('langs/qa-open-lang-*.php', 'openid');
+	qa_register_plugin_module('login', 'qa-openid-login.php', 'qa_openid_login', 'Openid Login');
+	qa_register_plugin_module('page', 'qa-openid-login-page.php', 'qa_openid_login_page', 'Openid Login Page');
+	qa_register_plugin_layer('qa-openid-layer.php', 'Openid Login Layer');
 }
-
-/*
-	Omit PHP closing tag to help avoid accidental output
-*/
