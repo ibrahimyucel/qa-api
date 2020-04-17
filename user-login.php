@@ -7,7 +7,7 @@
 	require_once '../qa-include/app/users.php';
 
 	
-	$inemailhandle = qa_post_text('emailhandle');
+	$inemailhandle = qa_post_text('handle');
 	$inpassword = qa_post_text('password');
 	$inremember = qa_post_text('remember');
 	
@@ -59,6 +59,7 @@
 					qa_set_logged_in_user($inuserid, $userinfo['handle'], !empty($inremember));
 					$success = 1;
 					$message = 'Logged in successfully';
+					$data['success'] = 1; 
 					$data['userid'] = $inuserid; 
 					$data['email'] = $userinfo['email'];
 					$data['level'] = $userinfo['level'];
