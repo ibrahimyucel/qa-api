@@ -25,6 +25,7 @@
 			'avatarblobid' 	=> $user['avatarblobid'],
 			'avatarwidth' 	=> $user['avatarwidth'],
 			'avatarheight' 	=> $user['avatarheight'],
+			'created' 		=> $user['created'],
 			)
 		);	
 	}
