@@ -55,7 +55,7 @@
 					}
 				}
 
-				if (!isset($errors['password'])) {
+				if ($passOk) {
 					qa_set_logged_in_user($inuserid, $userinfo['handle'], !empty($inremember));
 					$success = 1;
 					$message = 'Logged in successfully';
